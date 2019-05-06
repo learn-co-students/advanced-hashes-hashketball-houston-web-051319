@@ -1,5 +1,4 @@
 require 'pry'
-
 def game_hash
   {
     home: {
@@ -116,54 +115,83 @@ def game_hash
     }
   }
 end
+def num_points_scored(player_x)
 
-def num_points_scored(name)
-  player = find_the_player(name)
-  player.fetch(:points)
+   game_hash.each do |home_away, attributes|
+
+     attributes[:players].each do |player,stats|
+       if player == player_x
+
+         puts stats[:points]
+
+       end
+     end
+   end
+ end
+
+def shoe_size (player_x)
+  game_hash.each do |home_away, attributes|
+    attributes[:players].each do |player,stats|
+      if player == player_x
+        puts stats[:shoe]
+      end
+    end
+  end
 end
 
-def shoe_size(name)
-  player = find_the_player(name)
-  player.fetch(:shoe)
+def team_colors (name)
+  game_hash.each do |home_away,attributes|
+    if attributes[:team_name] == name
+    puts attributes[:colors]
+    end
+  end
 end
-
-def team_colors(team_name)
-  team = find_the_team(team_name)
-  team.fetch(:colors)
-end
-
 def team_names
-  teams.map{|t| t.fetch(:team_name)}
+  array =[]
+game_hash.each do |home_away,attributes|
+  array.push(attributes[:team_name])
 end
-
-def player_numbers(team_name)
-  find_the_team(team_name)[:players].map{ |player_name, stats| stats[:number] }
+puts array
 end
-
-def player_stats(player_name)
-  find_the_player(player_name)
+def player_numbers (name)
+  array =[]
+  game_hash.each do |home_away, attributes|
+    if attributes[:team_name] == name
+      attributes[:players].each do |player, stats|
+        array.push(stats[:number])
+      end
+    end
+  end
+  puts array
 end
+def player_stats (player_x)
 
+
+  game_hash.each do |home_away, attributes|
+    attributes[:players].each do | player, stats|
+      if player == player_x
+        puts stats
+
+      end
+    end
+  end
+end
 def big_shoe_rebounds
-  player_biggest_shoe_size.fetch(:rebounds)
+name_of_player=nil
+max_shoe = nil
+number_of_rebounds = nil
+game_hash.each do |home_away, attributes|
+  attributes[:players].each do |player,stats|
+    if max_shoe ==nil
+      max_shoe = stats[:shoe]
+      name_of_player = player
+      number_of_rebounds = stats[:rebounds]
+    elsif max_shoe< stats[:shoe]
+      max_shoe = stats[:shoe]
+      name_of_player = player
+      number_of_rebounds = stats[:rebounds]
+    end
+  end
 end
-
-def teams
-  game_hash.values
-end
-
-def players
-  game_hash[:home][:players].merge(game_hash[:away][:players])
-end
-
-def find_the_team(team_name)
-  teams.find {|team| team.fetch(:team_name) == team_name}
-end
-
-def find_the_player(name)
-  players.fetch(name)
-end
-
-def player_biggest_shoe_size
-  players.max_by{|player, stats| stats.fetch(:shoe)}[1]
+puts "#{name_of_player}  #{max_shoe}  #{number_of_rebounds}"
 end

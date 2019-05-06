@@ -118,52 +118,106 @@ def game_hash
 end
 
 def num_points_scored(name)
-  player = find_the_player(name)
-  player.fetch(:points)
+  points = 0 
+  game_hash.each do |location, team_data|
+    team_data.each do |attribute, data|
+      if attribute == :players
+        data.each do |playerName, playerData|
+         # binding.pry
+          if playerName == name 
+            #binding.pry
+            points = playerData[:points]
+            #binding.pry
+          end
+        end
+      end
+    end
+  end
+  points
 end
 
 def shoe_size(name)
-  player = find_the_player(name)
-  player.fetch(:shoe)
+  shoeSize = 0
+  game_hash.each do |location, team_data|
+    team_data.each do |attribute, data|
+      if attribute == :players
+        data.each do |playerName, playerData|
+         # binding.pry
+          if playerName == name 
+            #binding.pry
+            shoeSize = playerData[:shoe]
+            #binding.pry
+          end
+        end
+      end
+    end
+  end
+  shoeSize
 end
 
-def team_colors(team_name)
-  team = find_the_team(team_name)
-  team.fetch(:colors)
+def team_colors(teamName)
+  teamColorArr = []
+  game_hash.each do |location, team_data|
+    if team_data[:team_name] == teamName
+      team_data[:colors].each do |color|
+        teamColorArr << color
+      end
+    end
+  end
+  teamColorArr
 end
 
 def team_names
-  teams.map{|t| t.fetch(:team_name)}
+  teamArr = []
+  game_hash.each do |location, team_data|
+    team_data.each do |key, value|
+      if key == :team_name
+        teamArr << value
+      end
+    end
+  end
+  teamArr
 end
 
-def player_numbers(team_name)
-  find_the_team(team_name)[:players].map{ |player_name, stats| stats[:number] }
+def player_numbers(teamName)
+  numbersArr = []
+  game_hash.each do |location, team_data|
+    if team_data[:team_name] == teamName
+      team_data[:players].each do |playerName, playerData|
+        numbersArr << playerData[:number]
+      end
+    end
+  end
+  numbersArr
 end
 
-def player_stats(player_name)
-  find_the_player(player_name)
+def player_stats(inPlayerName)
+  game_hash.each do |location, team_data|
+    team_data[:players].each do |playerName, playerStats|
+      if playerName == inPlayerName
+        return playerStats
+      end
+    end
+  end
 end
-
-def big_shoe_rebounds
-  player_biggest_shoe_size.fetch(:rebounds)
+  
+def big_shoe_rebounds 
+  playerLargestShoe = ""
+  largestShoeSize = nil
+  numOfRebounds = nil
+  game_hash.each do |location, team_data|
+    team_data[:players].each do |playerName, playerData|
+      if largestShoeSize == nil
+        numOfRebounds = playerData[:rebounds]
+        playerLargestShoe = playerName
+        largestShoeSize = playerData[:shoe]
+      elsif playerData[:shoe] > largestShoeSize
+        numOfRebounds = playerData[:rebounds]
+        playerLargestShoe = playerName
+        largestShoeSize = playerData[:shoe]
+      end
+    end
+  end
+  numOfRebounds
 end
-
-def teams
-  game_hash.values
-end
-
-def players
-  game_hash[:home][:players].merge(game_hash[:away][:players])
-end
-
-def find_the_team(team_name)
-  teams.find {|team| team.fetch(:team_name) == team_name}
-end
-
-def find_the_player(name)
-  players.fetch(name)
-end
-
-def player_biggest_shoe_size
-  players.max_by{|player, stats| stats.fetch(:shoe)}[1]
-end
+puts big_shoe_rebounds
